@@ -37,6 +37,8 @@ jobs:
           if [ -z "$SETTINGS" ]; then echo "::error::Zip extracted but no settings.gradle.kts inside."; exit 1; fi
           DIR=$(dirname "$SETTINGS")
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          # Read the app name and version straight from the source, so the log and the
+          # artifact name always match what was actually built.
           APPNAME=$(grep -oP '<string name="app_name">\K[^<]+' "$DIR/app/src/main/res/values/strings.xml" | head -1)
           [ -z "$APPNAME" ] && APPNAME=App
           VCODE=$(grep -oP 'versionCode = \K[0-9]+' "$DIR/app/build.gradle.kts" | head -1)
@@ -62,4 +64,3 @@ jobs:
           name: ${{ steps.locate.outputs.appname }}-v${{ steps.locate.outputs.vcode }}-debug-apk
           path: "**/outputs/apk/**/*.apk"
           if-no-files-found: error
-          retention-days: 3
